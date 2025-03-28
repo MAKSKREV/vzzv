@@ -19,7 +19,7 @@ def register_user(name, password):
         st.error("Пользователь с таким именем уже существует.")
         return None
 
-    initial_balance =25 # Начальный баланс
+    initial_balance = 50  # Начальный баланс
     db.collection('users').add({
         'name': name,
         'password': password,  # Хранение пароля (небезопасно, но для примера)
