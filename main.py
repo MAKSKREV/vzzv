@@ -4,36 +4,37 @@ import time
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Инициализация Firebase только если приложение еще не инициализировано
+
 if not firebase_admin._apps:
-    cred = credentials.Certificate("izmailovo-12cf7-firebase-adminsdk-fbsvc-d85cb65cb3.json")
+    cred = credentials.Certificate("izmailovo-12cf7-firebase-adminsdk-fbsvc-9a3e88afda.json")
     firebase_admin.initialize_app(cred)
 
-# Инициализация Firestore
 db = firestore.client()
 
-# Функция для регистрации пользователя
+
 def register_user(name, password):
-    # Проверка на существование пользователя
-    if get_user_balance(name) is not None:
+
+    balance = get_user_balance(name)
+    if balance is not None:
         st.error("Пользователь с таким именем уже существует.")
+        st.warning(f"Пользователь: {name} уже зарегистрирован.")
         return None
 
-    initial_balance = 50  # Начальный баланс
-    db.collection('users').add({
+    initial_balance = 50  
+    user_ref = db.collection('users').add({
         'name': name,
-        'password': password,  # Хранение пароля (небезопасно, но для примера)
+        'password': password,  
         'balance': initial_balance
     })
     return name
 
-# Функция для входа пользователя
+
 def login_user(name, password):
     users_ref = db.collection('users').where('name', '==', name).where('password', '==', password)
     docs = users_ref.stream()
-    return any(docs)  # Возвращаем True, если пользователь найден
+    return any(docs)  
 
-# Функция для получения баланса пользователя
+
 def get_user_balance(name):
     users_ref = db.collection('users').where('name', '==', name)
     docs = users_ref.stream()
